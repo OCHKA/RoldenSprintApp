@@ -2,12 +2,12 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.label import Label
 
-from .sensor import SerialSensor
+from .sensor import CoapPeriodSensor
 
 
 class RoldenSprint(App):
     rpm_label = Label(text="no data")
-    sensor = SerialSensor()
+    sensor = CoapPeriodSensor()
 
     def build(self):
         Clock.schedule_interval(self.update, 1 / 30)
