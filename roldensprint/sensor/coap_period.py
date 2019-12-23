@@ -16,7 +16,7 @@ class CoapPeriodSensor(threading.Thread):
     def run(self) -> None:
         while not self.__stop_event.is_set():
             self.__event_loop.run_until_complete(self.async_request())
-            time.sleep(1)  # TODO: test under load, constantly polling
+            time.sleep(1 / 30)  # TODO: test under load, constantly polling
 
     async def async_request(self) -> None:
         protocol = await aiocoap.Context.create_client_context()
@@ -25,26 +25,18 @@ class CoapPeriodSensor(threading.Thread):
         try:
             response = await protocol.request(request).response
         except Exception as e:
-            print('Failed to fetch resource:')
-            print(e)
+            print('Failed to fetch resource:', e)
         else:
             if response.payload:  # TODO: implement proper error handling
                 self.handle_response(response.payload)
 
     def handle_response(self, response):
-        periods = response.split(b'\xFF')
+        if len(response) != 4:
+            print("invalid length:", len(response))
 
-        period_sum = 0
-        count = 0
-        for period in periods:
-            if len(period) == 4:
-                period_sum += int.from_bytes(period, 'big', signed=False)
-                count += 1
-            else:
-                print(len(period))
-
-        if count:
-            self.__rpm = int(period_sum / count)
+        avg_period = int.from_bytes(response, 'little', signed=False)
+        if avg_period:
+            self.__rpm = int(1e6 / avg_period * 60)
 
     def stop(self):
         self.__stop_event.set()
