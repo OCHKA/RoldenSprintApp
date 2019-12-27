@@ -4,7 +4,9 @@
     orientation: 'vertical'
 
     Label:
-        text: root.rpm
+        text: root.kv_rpm
         size_hint: 1, 0.1
 
     RollingGraph:
+        values: root.kv_rpm_history
+        max_value: 15000
