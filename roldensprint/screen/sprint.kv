@@ -1,0 +1,13 @@
+#:kivy 1.0
+
+<SprintScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+
+        Label:
+            text: app.kv_rpm
+            size_hint: 1, 0.1
+
+        RollingGraph:
+            values: app.kv_rpm_history
+            max_value: 15000

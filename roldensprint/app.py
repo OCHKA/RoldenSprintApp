@@ -1,9 +1,15 @@
 from kivy.properties import StringProperty, ListProperty
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.uix.screenmanager import ScreenManager
 
 from .sensor import CoapPeriodSensor
-from .widget.rolling_graph import RollingGraph
+from .widget import RollingGraph
+from .screen import SprintScreen
+
+
+class RoldenSprintScreenManager(ScreenManager):
+    pass
 
 
 class RoldenSprintApp(App):
