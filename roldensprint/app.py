@@ -1,4 +1,4 @@
-from kivy.properties import StringProperty, ListProperty
+from kivy.properties import StringProperty, ListProperty, NumericProperty
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager
@@ -13,10 +13,13 @@ class RoldenSprintScreenManager(ScreenManager):
 
 
 class RoldenSprintApp(App):
+    screen = None
+
     rpm_history_window = 1000
 
     kv_rpm = StringProperty("00000")
     kv_rpm_history = ListProperty([0] * rpm_history_window)
+    kv_sprint_countdown = NumericProperty(5)
 
     sensor = CoapPeriodSensor()
 
@@ -26,9 +29,13 @@ class RoldenSprintApp(App):
         })
 
     def build(self):
+        self.screen = RoldenSprintScreenManager()
+
         updates_per_second = self.config.get('roldensprint', 'updates_per_second')
         refresh_rate = 1 / int(updates_per_second)
         Clock.schedule_interval(self.update, refresh_rate)
+
+        return self.screen
 
     def build_settings(self, settings):
         settings.add_json_panel("RoldenSprint", self.config, filename='settings/roldensprint.json')
@@ -37,6 +44,11 @@ class RoldenSprintApp(App):
         self.sensor.start()
 
     def update(self, dt):
+        if self.kv_sprint_countdown - dt <= 0:
+            self.kv_sprint_countdown = 0
+        else:
+            self.kv_sprint_countdown -= dt
+
         self.kv_rpm_history.pop(0)
         self.kv_rpm_history.append(self.sensor.rpm)
 

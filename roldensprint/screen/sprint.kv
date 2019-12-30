@@ -1,8 +1,13 @@
 #:kivy 1.0
 
 <SprintScreen>:
+    name: 'sprint'
+
     BoxLayout:
         orientation: 'vertical'
+
+        CountDownDisplay:
+            time: app.kv_sprint_countdown
 
         Label:
             text: app.kv_rpm
