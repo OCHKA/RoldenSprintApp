@@ -20,7 +20,7 @@ class CoapSensor(threading.Thread):
 
     async def async_request(self) -> None:
         protocol = await aiocoap.Context.create_client_context()
-        request = aiocoap.Message(code=aiocoap.GET, uri='coap://192.168.1.149/period?0')
+        request = aiocoap.Message(code=aiocoap.GET, uri='coap://192.168.4.1/period?0')
 
         try:
             response = await protocol.request(request).response

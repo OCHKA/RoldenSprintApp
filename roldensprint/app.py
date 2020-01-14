@@ -1,4 +1,4 @@
-from kivy.properties import StringProperty, ListProperty, NumericProperty
+from kivy.properties import NumericProperty
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager
@@ -8,18 +8,14 @@ from .screen import RaceScreen, CountDownScreen
 
 
 class RoldenSprintScreenManager(ScreenManager):
-    pass
+    speed = NumericProperty(0)
+
+    def update(self, rpm):
+        self.speed = rpm
 
 
 class RoldenSprintApp(App):
     screen = None
-
-    rpm_history_window = 1000
-
-    kv_rpm = StringProperty("00000")
-    kv_rpm_history = ListProperty([0] * rpm_history_window)
-    kv_sprint_countdown = NumericProperty(5)
-
     sensor = CoapSensor()
 
     def build_config(self, config):
@@ -39,15 +35,8 @@ class RoldenSprintApp(App):
 
         updates_per_second = self.config.get('roldensprint', 'updates_per_second')
         refresh_rate = 1 / int(updates_per_second)
-        Clock.schedule_interval(self.update, refresh_rate)
 
-    def update(self, dt):
-        if self.kv_sprint_countdown - dt <= 0:
-            self.kv_sprint_countdown = 0
-        else:
-            self.kv_sprint_countdown -= dt
+        def update_func(dt):
+            self.screen.update(self.sensor.rpm)
 
-        self.kv_rpm_history.pop(0)
-        self.kv_rpm_history.append(self.sensor.rpm)
-
-        self.kv_rpm = f"{self.sensor.rpm:010}"
+        Clock.schedule_interval(update_func, refresh_rate)

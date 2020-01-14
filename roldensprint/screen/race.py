@@ -1,25 +1,19 @@
+from kivy.properties import NumericProperty
 from kivy.uix.screenmanager import Screen
 from kivy.lang.builder import Builder
 
-from roldensprint.widget import GraphWidget
+from roldensprint.widget import RacerWidget
 
 
 class RaceScreen(Screen):
-    pass
+    speed = NumericProperty(0)
 
 
 Builder.load_string('''
 <RaceScreen>:
-    name: 'sprint'
+    name: 'race'
 
-    BoxLayout:
-        orientation: 'vertical'
-        
-        Label:
-            text: 'fffg'
-            size_hint: 1, 0.1
-
-        GraphWidget:
-            max_value: 15000
+    RacerWidget:
+        name: 'racer1'
+        speed: root.speed
 ''')
-
