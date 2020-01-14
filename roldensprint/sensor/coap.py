@@ -5,7 +5,7 @@ import time
 import aiocoap
 
 
-class CoapPeriodSensor(threading.Thread):
+class CoapSensor(threading.Thread):
     daemon = True
 
     __rpm = 0

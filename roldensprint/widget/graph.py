@@ -1,10 +1,9 @@
 from kivy.properties import ListProperty
 from kivy.uix.widget import Widget
+from kivy.lang.builder import Builder
 
-from roldensprint import util
 
-
-class RollingGraph(Widget):
+class GraphWidget(Widget):
     kv_points = ListProperty([])
     values = ListProperty([])
     max_value = 2500
@@ -25,4 +24,13 @@ class RollingGraph(Widget):
         self.kv_points = points
 
 
-util.load_kv_file()
+Builder.load_string('''
+<GraphWidget>:
+    canvas:
+        Color:
+            rgba: .4, .4, 1, 1
+        Line:
+            points: self.kv_points
+            width: 1
+
+''')

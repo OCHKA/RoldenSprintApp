@@ -3,9 +3,8 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager
 
-from .sensor import CoapPeriodSensor
-from .widget import RollingGraph
-from .screen import SprintScreen
+from .sensor import CoapSensor
+from .screen import RaceScreen, CountDownScreen
 
 
 class RoldenSprintScreenManager(ScreenManager):
@@ -21,7 +20,7 @@ class RoldenSprintApp(App):
     kv_rpm_history = ListProperty([0] * rpm_history_window)
     kv_sprint_countdown = NumericProperty(5)
 
-    sensor = CoapPeriodSensor()
+    sensor = CoapSensor()
 
     def build_config(self, config):
         config.setdefaults('roldensprint', {
@@ -30,11 +29,6 @@ class RoldenSprintApp(App):
 
     def build(self):
         self.screen = RoldenSprintScreenManager()
-
-        updates_per_second = self.config.get('roldensprint', 'updates_per_second')
-        refresh_rate = 1 / int(updates_per_second)
-        Clock.schedule_interval(self.update, refresh_rate)
-
         return self.screen
 
     def build_settings(self, settings):
@@ -42,6 +36,10 @@ class RoldenSprintApp(App):
 
     def on_start(self):
         self.sensor.start()
+
+        updates_per_second = self.config.get('roldensprint', 'updates_per_second')
+        refresh_rate = 1 / int(updates_per_second)
+        Clock.schedule_interval(self.update, refresh_rate)
 
     def update(self, dt):
         if self.kv_sprint_countdown - dt <= 0:
