@@ -20,7 +20,7 @@ class RoldenSprintApp(App):
 
     def build_config(self, config):
         config.setdefaults('roldensprint', {
-            'updates_per_second': 30
+            'sensor_poll_freq': 30
         })
 
     def build(self):
@@ -33,10 +33,8 @@ class RoldenSprintApp(App):
     def on_start(self):
         self.sensor.start()
 
-        updates_per_second = self.config.get('roldensprint', 'updates_per_second')
-        refresh_rate = 1 / int(updates_per_second)
-
         def update_func(dt):
             self.screen.update(self.sensor.rpm)
 
-        Clock.schedule_interval(update_func, refresh_rate)
+        poll_freq = self.config.get('roldensprint', 'sensor_poll_freq')
+        Clock.schedule_interval(update_func, 1 / int(poll_freq))
