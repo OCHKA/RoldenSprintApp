@@ -7,7 +7,7 @@ from . import GraphWidget
 
 class RacerWidget(BoxLayout):
     name = StringProperty("nobody")
-    speed = NumericProperty(0)
+    speed = NumericProperty(25)
     _speed_text = StringProperty("00000")
 
     def on_speed(self, instance, new_value):
@@ -28,5 +28,5 @@ Builder.load_string('''
 
     GraphWidget:
         value: root.speed
-        max_value: 15000
+        max_value: 3000
 ''')

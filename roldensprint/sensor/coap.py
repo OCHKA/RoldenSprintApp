@@ -14,16 +14,20 @@ class CoapSensor(threading.Thread):
     __event_loop = asyncio.new_event_loop()
 
     def run(self) -> None:
-        while not self.__stop_event.is_set():
-            self.__event_loop.run_until_complete(self.async_request())
-            time.sleep(1 / 30)  # TODO: test under load, constantly polling
+        self.__event_loop.run_until_complete(self.init())
 
-    async def async_request(self) -> None:
-        protocol = await aiocoap.Context.create_client_context()
+        while not self.__stop_event.is_set():
+            self.__event_loop.run_until_complete(self.poll())
+            time.sleep(1 / 10)  # TODO: test under load, constantly polling
+
+    async def init(self):
+        self.__protocol = await aiocoap.Context.create_client_context()
+
+    async def poll(self) -> None:
         request = aiocoap.Message(code=aiocoap.GET, uri='coap://192.168.4.1/period?0')
 
         try:
-            response = await protocol.request(request).response
+            response = await self.__protocol.request(request).response
         except Exception as e:
             print('Failed to fetch resource:', e)
         else:
