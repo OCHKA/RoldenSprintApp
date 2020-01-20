@@ -2,7 +2,7 @@ from kivy.properties import ListProperty, StringProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
 
-from . import GraphWidget
+from .graph import GraphWidget
 
 
 class RacerWidget(BoxLayout):

@@ -2,7 +2,7 @@ from kivy.properties import NumericProperty
 from kivy.uix.screenmanager import Screen
 from kivy.lang.builder import Builder
 
-from roldensprint.widget import RacerWidget
+from roldensprint.widget.racer import RacerWidget
 
 
 class RaceScreen(Screen):

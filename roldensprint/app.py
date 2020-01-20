@@ -3,8 +3,9 @@ from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager
 
-from .sensor import CoapSensor
-from .screen import RaceScreen, CountDownScreen
+from .sensor.coap import CoapSensor
+from .screen.race import RaceScreen
+from .screen.countdown import CountDownScreen
 
 
 class RoldenSprintScreenManager(ScreenManager):

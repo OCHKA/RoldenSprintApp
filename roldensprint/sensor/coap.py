@@ -29,7 +29,7 @@ class CoapSensor(threading.Thread):
         try:
             response = await self.__protocol.request(request).response
         except Exception as e:
-            print('Failed to fetch resource:', e)
+            print('coap:', e)
         else:
             if response.payload:  # TODO: implement proper error handling
                 self.handle_response(response.payload)
