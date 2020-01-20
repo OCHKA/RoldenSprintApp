@@ -1,9 +1,0 @@
-[
-  {
-    "type": "numeric",
-    "title": "Sensor polling frequency",
-    "desc": "How many times sensors are polled in one second\nRequires restart",
-    "section": "roldensprint",
-    "key": "sensor_poll_freq"
-  }
-]

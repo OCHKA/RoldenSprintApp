@@ -17,19 +17,33 @@ class RoldenSprintScreenManager(ScreenManager):
 
 class RoldenSprintApp(App):
     screen = None
-    sensor = CoapSensor()
+    sensor = None
+    players = 2
 
     def build_config(self, config):
         config.setdefaults('roldensprint', {
-            'sensor_poll_freq': 30
+            'players': self.players,
         })
+        config.setdefaults('sensor', {
+            'url': '192.168.4.1/period',
+            'poll_freq_hz': 10
+        })
+        self.players = config.getint('roldensprint', 'players')
+        for player_id in range(self.players):
+            config.setdefaults(f'player{player_id}', {
+                'name': 'SECT',
+                'wheel_length_mm': 2200,
+                'roller_length_mm': 200
+            })
 
     def build(self):
-        self.screen = RoldenSprintScreenManager()
-        return self.screen
+        poll_frq = self.config.get('sensor', 'poll_freq_hz')
+        url = self.config.get('sensor', 'url')
+        self.sensor = CoapSensor(url)
 
-    def build_settings(self, settings):
-        settings.add_json_panel("RoldenSprint", self.config, filename='settings/roldensprint.json')
+        self.screen = RoldenSprintScreenManager()
+
+        return self.screen
 
     def on_start(self):
         self.sensor.start()
@@ -37,5 +51,5 @@ class RoldenSprintApp(App):
         def update_func(dt):
             self.screen.update(self.sensor.rpm)
 
-        poll_freq = self.config.get('roldensprint', 'sensor_poll_freq')
+        poll_freq = self.config.get('sensor', 'poll_freq_hz')
         Clock.schedule_interval(update_func, 1 / int(poll_freq))

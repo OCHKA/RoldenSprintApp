@@ -13,6 +13,10 @@ class CoapSensor(threading.Thread):
     __protocol = None
     __event_loop = asyncio.new_event_loop()
 
+    def __init__(self, base_url):
+        super(CoapSensor, self).__init__()
+        self._base_url = base_url
+
     def run(self) -> None:
         self.__event_loop.run_until_complete(self.init())
 
@@ -24,7 +28,7 @@ class CoapSensor(threading.Thread):
         self.__protocol = await aiocoap.Context.create_client_context()
 
     async def poll(self) -> None:
-        request = aiocoap.Message(code=aiocoap.GET, uri='coap://192.168.4.1/period?0')
+        request = aiocoap.Message(code=aiocoap.GET, uri=f'coap://{self._base_url}?0')
 
         try:
             response = await self.__protocol.request(request).response
