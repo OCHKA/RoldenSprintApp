@@ -1,6 +1,7 @@
+import asyncio
 import time
 
-from kivy.properties import NumericProperty
+from kivy.properties import NumericProperty, DictProperty
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager
@@ -8,53 +9,71 @@ from kivy.uix.screenmanager import ScreenManager
 from .sensor.coap import CoapSensor
 from .screen.race import RaceScreen
 from .screen.countdown import CountDownScreen
+from .racer import Racer
 
 
 class RoldenSprintScreenManager(ScreenManager):
-    speed = NumericProperty(0)
-
-    def update(self, rpm):
-        self.speed = rpm[0]
+    speed = 0
 
 
 class RoldenSprintApp(App):
     screen = None
     sensor = None
-    players = 2
+    racers = []
 
     def build_config(self, config):
         config.setdefaults('roldensprint', {
-            'players': self.players,
+            'racer_count': 2,
         })
         config.setdefaults('sensor', {
             'poll_freq_hz': 3
         })
 
-        self.players = config.getint('roldensprint', 'players')
-        for player_id in range(self.players):
-            config.setdefaults(f'player{player_id}', {
-                'url': f'coap://192.168.4.1/period?{player_id}',
-                'name': 'SECT',
-                'wheel_length_mm': 2200,
+        racer_count = config.getint('roldensprint', 'racer_count')
+        for racer_id in range(racer_count):
+            section = f'racer{racer_id}'
+
+            config.setdefaults(section, {
+                'name': f'SECT{racer_id}',
+                'sensor_url': f'coap://192.168.4.1/rotations?{racer_id}',
                 'roller_length_mm': 200
             })
 
     def build(self):
-        sensor_urls = []
-        for player_id in range(self.players):
-            player = f'player{player_id}'
-            sensor_urls.append(self.config.get(player, 'url'))
+        racer_count = self.config.getint('roldensprint', 'racer_count')
 
-        poll_freq = self.config.getint('sensor', 'poll_freq_hz')
-        self.sensor = CoapSensor(poll_freq, sensor_urls)
+        for racer_id in range(racer_count):
+            config_section = f'racer{racer_id}'
+            config = self.config[config_section]
+
+            sensor = CoapSensor(config['sensor_url'])
+            racer = Racer(sensor, config['roller_length_mm'])
+            self.racers.append(racer)
 
         self.screen = RoldenSprintScreenManager()
         return self.screen
 
-    def on_start(self):
-        self.sensor.start()
+    def main(self):
+        async def update_wrapper():
+            try:
+                while not self.config:  # wait for app to build
+                    await asyncio.sleep(1 / 10)
 
-        def update_func(dt):
-            self.screen.update(self.sensor.rpm)
+                await self.update_racers()
+            except asyncio.CancelledError:
+                print("Racer updater was canceled")
 
-        Clock.schedule_interval(update_func, 1 / self.sensor.poll_freq)
+        updater = asyncio.ensure_future(update_wrapper())
+
+        async def main_wrapper():
+            await self.async_run()
+            updater.cancel()
+
+        return asyncio.gather(main_wrapper(), updater)
+
+    async def update_racers(self):
+        poll_freq = self.config.getint('sensor', 'poll_freq_hz')
+
+        while True:
+            await asyncio.gather(*[racer.update() for racer in self.racers])
+            await asyncio.sleep(1 / poll_freq)
