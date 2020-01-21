@@ -28,5 +28,5 @@ Builder.load_string('''
 
     GraphWidget:
         value: root.speed
-        max_value: 3000
+        max_value: 100
 ''')

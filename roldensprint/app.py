@@ -1,9 +1,6 @@
 import asyncio
-import time
 
-from kivy.properties import NumericProperty, DictProperty
 from kivy.app import App
-from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager
 
 from .sensor.coap import CoapSensor
@@ -13,7 +10,7 @@ from .racer import Racer
 
 
 class RoldenSprintScreenManager(ScreenManager):
-    speed = 0
+    pass
 
 
 class RoldenSprintApp(App):
@@ -26,7 +23,7 @@ class RoldenSprintApp(App):
             'racer_count': 2,
         })
         config.setdefaults('sensor', {
-            'poll_freq_hz': 3
+            'poll_freq_hz': 5
         })
 
         racer_count = config.getint('roldensprint', 'racer_count')
@@ -46,8 +43,9 @@ class RoldenSprintApp(App):
             config_section = f'racer{racer_id}'
             config = self.config[config_section]
 
-            sensor = CoapSensor(config['sensor_url'])
-            racer = Racer(sensor, config['roller_length_mm'])
+            sensor = CoapSensor(config.get('sensor_url'))
+            roller_length_mm = config.getint('roller_length_mm')
+            racer = Racer(config.get('name'), sensor, roller_length_mm / 1000)
             self.racers.append(racer)
 
         self.screen = RoldenSprintScreenManager()
