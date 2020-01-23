@@ -1,3 +1,5 @@
+import random
+
 from kivy.properties import ListProperty, NumericProperty
 from kivy.uix.widget import Widget
 from kivy.lang.builder import Builder
@@ -5,15 +7,17 @@ from kivy.clock import Clock
 
 
 class GraphWidget(Widget):
-    value = NumericProperty(420)
-    max_value = NumericProperty(2500)
+    value = NumericProperty(0)
+    max_value = NumericProperty(100)
     history_len = NumericProperty(1000)
 
     _points = ListProperty([])
-    _history = [0] * history_len.defaultvalue
+    _history = ListProperty([0] * history_len.defaultvalue)
 
     def __init__(self, **kwargs):
         super(GraphWidget, self).__init__(**kwargs)
+
+        self.rand_red_color = random.random()
         Clock.schedule_once(self.update)
 
     def update(self, dt):
@@ -26,8 +30,8 @@ class GraphWidget(Widget):
 
         points = []
         for idx, value in enumerate(self._history):
-            x_pos = x_step * idx
-            y_pos = y_step * value
+            x_pos = x_step * idx + self.x
+            y_pos = y_step * value + self.y
             points.append([x_pos, y_pos])
         self._points = points
 
@@ -36,10 +40,12 @@ class GraphWidget(Widget):
 
 Builder.load_string('''
 <GraphWidget>:
-    canvas:
+    canvas:        
         Color:
-            rgba: .4, .4, 1, 1
+            rgba: 0, 0, 0, 1
+            
         Line:
-            points: self._points
-            width: 1
+            points: root._points
+            joint: 'round'
+            width: 3
 ''')

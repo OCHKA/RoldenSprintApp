@@ -7,26 +7,36 @@ from .graph import GraphWidget
 
 class RacerWidget(BoxLayout):
     name = StringProperty("nobody")
-    speed = NumericProperty(25)
-    _speed_text = StringProperty("00000")
-
-    def on_speed(self, instance, new_value):
-        self._speed_text = f"{new_value:010}"
+    speed = NumericProperty(0)
 
 
 Builder.load_string('''
+<NameLabel@Label>
+    color: 0, 0, 0, 1
+    font_size: '30sp'
+    bold: True
+
 <RacerWidget>:
     orientation: 'vertical'
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    padding: 5, 15
 
     BoxLayout:
         size_hint: 1, 0.1
+        orientation: 'vertical'
         
-        Label:
+        NameLabel:
             text: root.name
-        Label:
-            text: root._speed_text
+        NameLabel:
+            text: str(int(root.speed)) + " KPH"
 
     GraphWidget:
         value: root.speed
-        max_value: 100
+        max_value: 80
 ''')

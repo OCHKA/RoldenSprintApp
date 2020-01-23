@@ -10,22 +10,22 @@ class RaceScreen(Screen):
     pass
 
 
-Builder.load_string('''
-<RoldenRacer@RacerWidget>:
-    racer: app.racers[0]
-    name: self.racer.name
-    speed: self.racer.speed_ms * 3.6
-    distance: self.racer.distance_m
-            
+Builder.load_string('''            
 <RaceScreen>:
     name: 'race'
     
     BoxLayout:
         orientation: 'horizontal'
         
-        RoldenRacer:
+        RacerWidget:
             racer: app.racers[0]
+            name: self.racer.name
+            speed: self.racer.speed_ms * 3.6
+            distance: self.racer.distance_m
         
-        RoldenRacer:
+        RacerWidget:
             racer: app.racers[1]
+            name: self.racer.name
+            speed: self.racer.speed_ms * 3.6
+            distance: self.racer.distance_m
 ''')
