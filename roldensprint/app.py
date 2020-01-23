@@ -2,6 +2,7 @@ import asyncio
 
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
+from kivy.logger import Logger
 
 from .sensor.coap import CoapSensor
 from .screen.race import RaceScreen
@@ -37,6 +38,8 @@ class RoldenSprintApp(App):
             })
 
     def build(self):
+        Logger.info(f"App: Loaded configuration file <{self.get_application_config()}>")
+
         racer_count = self.config.getint('roldensprint', 'racer_count')
 
         for racer_id in range(racer_count):
