@@ -8,35 +8,55 @@ from .graph import GraphWidget
 class RacerWidget(BoxLayout):
     name = StringProperty("nobody")
     speed = NumericProperty(0)
+    distance = NumericProperty(0)
+    race_distance = NumericProperty(1000)
+
+    _progress_text = StringProperty(f"0 / {race_distance.defaultvalue} M")
+
+    def on_distance(self, instance, value):
+        if value >= self.race_distance:
+            self._progress_text = "FINISHED"
+        else:
+            self._progress_text = f"{value:.2f} / {self.race_distance} M"
 
 
 Builder.load_string('''
-<NameLabel@Label>
+<LabelTemplate@Label>
     color: 0, 0, 0, 1
     font_size: '30sp'
     bold: True
 
 <RacerWidget>:
     orientation: 'vertical'
+    padding: 25, 25
+    spacing: 25
+
     canvas:
         Color:
             rgba: 1, 1, 1, 1
 
         Rectangle:
-            size: self.size
+            size: [self.width - 5, self.height]
             pos: self.pos
-    padding: 5, 15
 
-    BoxLayout:
+    BoxLayout: 
         size_hint: 1, 0.1
-        orientation: 'vertical'
+        orientation: 'horizontal'
+        spacing: 25
         
-        NameLabel:
+        LabelTemplate:
             text: root.name
-        NameLabel:
+        LabelTemplate:
             text: str(int(root.speed)) + " KPH"
+        LabelTemplate:
+            text: root._progress_text
+    
+    ProgressBar:
+        max: root.race_distance
+        value: root.distance
 
     GraphWidget:
+        index: 0
         value: root.speed
         max_value: 80
 ''')

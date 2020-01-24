@@ -18,10 +18,12 @@ class RoldenSprintApp(App):
     screen = None
     sensor = None
     racers = []
+    race_distance_m = 1000
 
     def build_config(self, config):
         config.setdefaults('roldensprint', {
             'racer_count': 2,
+            'race_distance_m': self.race_distance_m
         })
         config.setdefaults('sensor', {
             'poll_freq_hz': 5
@@ -50,6 +52,8 @@ class RoldenSprintApp(App):
             roller_length_mm = config.getint('roller_length_mm')
             racer = Racer(config.get('name'), sensor, roller_length_mm / 1000)
             self.racers.append(racer)
+
+        self.race_distance_m = self.config.getint('roldensprint', 'race_distance_m')
 
         self.screen = RoldenSprintScreenManager()
         return self.screen

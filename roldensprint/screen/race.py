@@ -10,7 +10,7 @@ class RaceScreen(Screen):
     pass
 
 
-Builder.load_string('''            
+Builder.load_string('''
 <RaceScreen>:
     name: 'race'
     
@@ -22,10 +22,12 @@ Builder.load_string('''
             name: self.racer.name
             speed: self.racer.speed_ms * 3.6
             distance: self.racer.distance_m
+            race_distance: app.race_distance_m
         
         RacerWidget:
             racer: app.racers[1]
             name: self.racer.name
             speed: self.racer.speed_ms * 3.6
             distance: self.racer.distance_m
+            race_distance: app.race_distance_m
 ''')
