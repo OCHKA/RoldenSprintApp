@@ -2,8 +2,6 @@ from kivy.properties import ListProperty, StringProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
 
-from .graph import GraphWidget
-
 
 class RacerWidget(BoxLayout):
     name = StringProperty("nobody")
@@ -34,9 +32,9 @@ Builder.load_string('''
     canvas:
         Color:
             rgba: 1, 1, 1, 1
-
+        
         Rectangle:
-            size: [self.width - 5, self.height]
+            size: self.size
             pos: self.pos
 
     BoxLayout: 
@@ -54,9 +52,4 @@ Builder.load_string('''
     ProgressBar:
         max: root.race_distance
         value: root.distance
-
-    GraphWidget:
-        index: 0
-        value: root.speed
-        max_value: 80
 ''')

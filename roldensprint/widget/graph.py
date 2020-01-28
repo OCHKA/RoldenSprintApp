@@ -40,12 +40,19 @@ class GraphWidget(Widget):
 
 Builder.load_string('''
 <GraphWidget>:
-    canvas:        
+    canvas:
+        Color:
+            rgba: 1, 1, 1, 1
+            
+        Rectangle:
+            size: self.size
+            pos: self.pos
+            
         Color:
             rgba: 0, 0, 0, 1
             
         Line:
             points: root._points
             joint: 'round'
-            width: 3
+            width: 2.5
 ''')
