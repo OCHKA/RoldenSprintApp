@@ -1,7 +1,6 @@
-from kivy.properties import NumericProperty
 from kivy.uix.screenmanager import Screen
 from kivy.lang.builder import Builder
-from kivy.app import App
+from kivy.core.window import Window
 
 from roldensprint.widget.racer import RacerWidget
 from roldensprint.widget.graph import GraphWidget

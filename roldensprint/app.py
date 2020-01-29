@@ -3,6 +3,7 @@ import asyncio
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 from kivy.logger import Logger
+from kivy.core.window import Window
 
 from .sensor.coap import CoapSensor
 from .screen.race import RaceScreen
@@ -11,7 +12,15 @@ from .racer import Racer
 
 
 class RoldenSprintScreenManager(ScreenManager):
-    pass
+    def __init__(self, **kwargs):
+        super(RoldenSprintScreenManager, self).__init__(**kwargs)
+
+        self._keyboard = Window.request_keyboard(None, self, 'text')
+        self._keyboard.bind(on_key_up=self._on_keyboard_up)
+
+    def _on_keyboard_up(self, keyboard, keycode):
+        if keycode[1] == 'spacebar':
+            self.current = 'countdown'
 
 
 class RoldenSprintApp(App):
