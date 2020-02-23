@@ -15,7 +15,7 @@ class Racer(EventDispatcher):
     speed_ms = NumericProperty(0)
     distance_m = NumericProperty(0)
 
-    def __init__(self, name: str, sensor, roller_length_m: int):
+    def __init__(self, name: str = '', sensor=None, roller_length_m: int = 0):
         super(Racer, self).__init__()
 
         self.name = name

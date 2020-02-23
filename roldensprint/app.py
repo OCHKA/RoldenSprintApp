@@ -1,9 +1,11 @@
 import asyncio
 
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager
+from kivy.uix.screenmanager import ScreenManager, FadeTransition
 from kivy.logger import Logger
 from kivy.core.window import Window
+from kivy.clock import Clock
+from kivy.properties import ObjectProperty
 
 from .sensor.coap import CoapSensor
 from .screen.race import RaceScreen
@@ -18,16 +20,26 @@ class RoldenSprintScreenManager(ScreenManager):
         self._keyboard = Window.request_keyboard(None, self, 'text')
         self._keyboard.bind(on_key_up=self._on_keyboard_up)
 
+        self._countdown = self.get_screen('countdown')
+        self._countdown.bind(timer=self._on_countdown_timer)
+
     def _on_keyboard_up(self, keyboard, keycode):
         if keycode[1] == 'spacebar':
             self.current = 'countdown'
+
+    def _on_countdown_timer(self, instance, value):
+        if value <= 0:
+            def switch_to_race(dt):
+                self.current = 'race'
+
+            Clock.schedule_once(switch_to_race, 1 / 2)
 
 
 class RoldenSprintApp(App):
     screen = None
     sensor = None
-    racers = []
-    race_distance_m = 1000
+    racers = [Racer(), Racer()]
+    race_distance_m = 3000
 
     def build_config(self, config):
         config.setdefaults('roldensprint', {
@@ -51,6 +63,8 @@ class RoldenSprintApp(App):
     def build(self):
         Logger.info(f"App: Loaded configuration file <{self.get_application_config()}>")
 
+        self.screen = RoldenSprintScreenManager(transition=FadeTransition())
+
         racer_count = self.config.getint('roldensprint', 'racer_count')
 
         for racer_id in range(racer_count):
@@ -60,11 +74,10 @@ class RoldenSprintApp(App):
             sensor = CoapSensor(config.get('sensor_url'))
             roller_length_mm = config.getint('roller_length_mm')
             racer = Racer(config.get('name'), sensor, roller_length_mm / 1000)
-            self.racers.append(racer)
+            self.racers[racer_id] = racer
 
         self.race_distance_m = self.config.getint('roldensprint', 'race_distance_m')
 
-        self.screen = RoldenSprintScreenManager()
         return self.screen
 
     def main(self):

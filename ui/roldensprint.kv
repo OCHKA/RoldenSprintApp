@@ -1,0 +1,31 @@
+#:kivy 1.0
+
+<RacerTemplate@RacerWidget>:
+    race_distance: app.config.getint('roldensprint', 'race_distance_m')
+
+<RoldenSprintScreenManager>:
+    RaceScreen:
+        name: 'race'
+
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 10
+
+            RacerTemplate:
+                name: app.config.get('racer0', 'name')
+                roller_length: app.config.get('racer0', 'roller_length_mm')
+                sensor_index: 0
+
+#            GraphWidget:
+#                index: 0
+#                value: app.racers[0].speed_ms * root.speed_multiplier
+#                max_value: 80
+
+    CountDownScreen:
+        id: countdown
+        name: 'countdown'
+        text: 'READY'
+
+        Label:
+            text: countdown.text
+            font_size: '60sp'

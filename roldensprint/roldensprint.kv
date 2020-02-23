@@ -1,5 +1,44 @@
 #:kivy 1.0
 
 <RoldenSprintScreenManager>:
+    race_distance_m: app.race_distance_m
+    racer0: app.racers[0]
+    racer1: app.racers[1]
+    speed_multiplier: 3.6  # ms to kph
+
     RaceScreen:
+        name: 'race'
+
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 10
+
+            BoxLayout:
+                orientation: 'horizontal'
+                spacing: 10
+
+                RacerWidget:
+                    name: app.racers[0].name
+                    speed: app.racers[0].speed_ms * root.speed_multiplier
+                    distance: app.racers[0].distance_m
+                    race_distance: root.race_distance_m
+
+                RacerWidget:
+                    name: app.racers[1].name
+                    speed: app.racers[1].speed_ms * root.speed_multiplier
+                    distance: app.racers[1].distance_m
+                    race_distance: root.race_distance_m
+
+            GraphWidget:
+                index: 0
+                value: app.racers[0].speed_ms * root.speed_multiplier
+                max_value: 80
+
     CountDownScreen:
+        id: countdown
+        name: 'countdown'
+        text: 'READY'
+
+        Label:
+            text: countdown.text
+            font_size: '60sp'
