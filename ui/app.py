@@ -14,7 +14,8 @@ class RoldenSprintApp(App):
             'race_distance_m': self.race_distance_m
         })
         config.setdefaults('sensor', {
-            'url': f'coap://192.168.4.1/rotations'
+            'url': f'coap://192.168.4.1/rotations',
+            'max_poll_rate': 30
         })
 
         # default racer config. should be copy-pasted and re`name`d to add more racers
