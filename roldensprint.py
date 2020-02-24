@@ -3,7 +3,7 @@ import time
 import logging
 
 from ui.app import RoldenSprintApp
-from sensor.roldensprint import RoldenSprint as RoldenSprintSensor
+from sensor.roldensprint import RoldenSprintSensor
 
 
 def init_sensors():

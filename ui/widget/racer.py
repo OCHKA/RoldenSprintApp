@@ -1,8 +1,7 @@
-import pynng
 from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
-from kivy.clock import Clock
+from pubsub import pub
 
 
 class RacerWidget(BoxLayout):
@@ -16,19 +15,11 @@ class RacerWidget(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self._socket = pynng.Sub0(dial='inproc://roldensprint')
-        self._socket.subscribe(f'sensor/{self.sensor_index}')
-        Clock.schedule_once(self._poll)
+        pub.subscribe(self.on_sensor, f'sensor/{self.sensor_index}')
 
-    def _poll(self, dt):
-        try:
-            data = self._socket.recv(block=False)
-        except pynng.exceptions.TryAgain:
-            Clock.schedule_once(self._poll)
-            return
-
-        print(data)
-        Clock.schedule_once(self._poll, 1 / 10)
+    @staticmethod
+    def on_sensor(rotations):
+        print(f"widget: {rotations}")
 
     def on_distance(self, instance, value):
         if value >= self.race_distance:

@@ -3,48 +3,49 @@ import time
 import aiocoap
 import logging
 import asyncio
-import pickle
 from typing import Optional
-import pynng
+from pubsub import pub
 
 os.environ['AIOCOAP_CLIENT_TRANSPORT'] = 'simple6'  # Android doesn't work with udp6
 
 
-class RoldenSprint:
+class RoldenSprintSensor:
     """
     Client for COAP-based RoldenSprintSensor device
     """
 
     def __init__(self, url_base: str, index: int, max_poll_rate: int = 30):
-        self._coap: Optional[aiocoap.Context] = None
         self._logger = logging.getLogger(__name__)
+        self._topic = f'sensor/{index}'
+
+        self._coap: Optional[aiocoap.Context] = None
         self._url = f'{url_base}?{index}'
-        self._topic = f'sensor/{index}'.encode('ascii')
-        self._interface = pynng.Pub0(listen='inproc://roldensprint')
+
         self._loop = asyncio.new_event_loop()
+
         self._max_poll_rate = max_poll_rate
 
     def run(self):
+        def forward_sensor_data():
+            rotations = self._loop.run_until_complete(self.poll())
+            if rotations:
+                pub.sendMessage(self._topic, rotations=rotations)
+
         while True:
             start_time = time.time()
-            rotations = self._loop.run_until_complete(self.poll())
-            if not rotations:
-                continue
 
-            try:
-                self._interface.send(self._topic + pickle.dumps(rotations))
-            except pynng.exceptions.Closed:  # socket was closed, time to stop
-                return
+            forward_sensor_data()
 
+            # wait for next run
             max_poll_time = 1 / self._max_poll_rate
             used_time = time.time() - start_time
             unused_time = max_poll_time - used_time
+
             if unused_time > 0:
                 time.sleep(unused_time)
 
     def stop(self):
-        # TODO: _protocol too
-        self._interface.close()
+        pass  # TODO: should actually stop running run() method
 
     async def poll(self) -> Optional[int]:
         if not self._coap:
