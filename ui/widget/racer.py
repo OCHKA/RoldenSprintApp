@@ -9,23 +9,26 @@ class RacerWidget(BoxLayout):
     speed = NumericProperty(0)
     distance = NumericProperty(0)
     race_distance = NumericProperty(1000)
-    sensor_index = NumericProperty(0)
+    index = NumericProperty(0)
 
     _progress_text = StringProperty(f"0 / {race_distance.defaultvalue} M")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        pub.subscribe(self.on_sensor, f'sensor/{self.sensor_index}')
 
-    @staticmethod
-    def on_sensor(rotations):
-        print(f"widget: {rotations}")
+        pub.subscribe(self.on_speed_data, f'racer.{self.index}.speed')
+        pub.subscribe(self.on_distance_data, f'racer.{self.index}.distance')
 
-    def on_distance(self, instance, value):
-        if value >= self.race_distance:
+    def on_speed_data(self, speed):
+        self.speed = speed * 3.6
+
+    def on_distance_data(self, distance):
+        self.distance = distance
+
+        if distance >= self.race_distance:
             self._progress_text = "FINISHED"
         else:
-            self._progress_text = f"{value:.2f} / {self.race_distance} M"
+            self._progress_text = f"{distance:.2f} / {self.race_distance} M"
 
 
 Builder.load_string('''

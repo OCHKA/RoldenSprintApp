@@ -14,9 +14,9 @@ class RoldenSprintSensor:
     Client for COAP-based RoldenSprintSensor device
     """
 
-    def __init__(self, url_base: str, index: int, max_poll_rate: int = 30):
+    def __init__(self, topic: str, url_base: str, index: int, max_poll_rate: int = 30):
         self._logger = logging.getLogger(__name__)
-        self._topic = f'sensor/{index}'
+        self._topic = topic
 
         self._coap: Optional[aiocoap.Context] = None
         self._url = f'{url_base}?{index}'
