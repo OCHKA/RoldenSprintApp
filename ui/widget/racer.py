@@ -1,15 +1,19 @@
+import logging
 from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
+from kivy.animation import Animation
 from pubsub import pub
 
 
 class RacerWidget(BoxLayout):
     name = StringProperty("nobody")
-    index = NumericProperty(0)
+    speed_topic = StringProperty()
+    distance_topic = StringProperty()
     race_distance = NumericProperty(1000)
 
-    _speed = StringProperty('000 KPH')
+    speed = NumericProperty(0)
+    _speed_text = StringProperty('000 KPH')
     _distance = NumericProperty(0)
     _progress_text = StringProperty(f"0 / {race_distance.defaultvalue} M")
 
@@ -18,15 +22,19 @@ class RacerWidget(BoxLayout):
 
         self._start_distance = None
 
-        pub.subscribe(self.on_speed_data, f'racer.{self.index}.speed')
-        pub.subscribe(self.on_distance_data, f'racer.{self.index}.distance')
-
     def reset_position(self):
         self._start_distance = self.distance
 
     def on_speed_data(self, speed):
+        """
+        :param speed: in meters per second
+        """
         speed_kph = speed * 3.6
-        self._speed = f"{speed_kph:06.2f} KPH"
+        anim = Animation(speed=speed_kph)
+        anim.start(self)
+
+    def on_speed(self, instance, value):
+        self._speed_text = f"{value:06.2f} KPH"
 
     def on_distance_data(self, distance):
         if self._start_distance is None:
@@ -40,6 +48,14 @@ class RacerWidget(BoxLayout):
             self._progress_text = "FINISHED"
         else:
             self._progress_text = f"{self._distance:.2f} / {self.race_distance} M"
+
+    def on_speed_topic(self, instance, value):
+        logging.info(f"{__name__}: subscribed to: {value}")
+        pub.subscribe(self.on_speed_data, value)
+
+    def on_distance_topic(self, instance, value):
+        logging.info(f"{__name__}: subscribed to: {value}")
+        pub.subscribe(self.on_distance_data, self.distance_topic)
 
 
 Builder.load_string('''
@@ -69,7 +85,7 @@ Builder.load_string('''
         LabelTemplate:
             text: root.name
         LabelTemplate:
-            text: root._speed
+            text: root._speed_text
         LabelTemplate:
             text: root._progress_text
     

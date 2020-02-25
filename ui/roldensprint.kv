@@ -12,9 +12,9 @@
             spacing: 10
 
             RacerTemplate:
-                index: 0
                 name: app.config.get('racer0', 'name')
-                roller_length: app.config.get('racer0', 'roller_length_mm')
+                speed_topic: 'racer.0.speed'
+                distance_topic: 'racer.0.distance'
 
 #            GraphWidget:
 #                index: 0
