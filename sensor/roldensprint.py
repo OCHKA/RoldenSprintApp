@@ -26,15 +26,13 @@ class RoldenSprintSensor:
         self._max_poll_rate = max_poll_rate
 
     def run(self):
-        def forward_sensor_data():
-            rotations = self._loop.run_until_complete(self.poll())
-            if rotations:
-                pub.sendMessage(self._topic, rotations=rotations)
-
         while True:
             start_time = time.time()
 
-            forward_sensor_data()
+            # forward sensor data
+            rotations = self._loop.run_until_complete(self.poll())
+            if rotations:
+                pub.sendMessage(self._topic, rotations=rotations)
 
             # wait for next run
             max_poll_time = 1 / self._max_poll_rate

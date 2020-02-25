@@ -12,19 +12,19 @@ sensors = []
 converters = []
 
 
-def init_racer(base_url: str, max_poll_rate: 30, index: int, racer):
+def init_racer(base_url: str, max_poll_rate: 30, index: int, section):
+    racer = app.config[section]
     logging.info(f"init_racer: '{racer['name']}'")
 
-    base_topic = f'racer.{index}'
-    rotations = base_topic + '.rotations'
+    rotations = section + '.rotations'
 
     sensor = RoldenSprintSensor(rotations, base_url, index, max_poll_rate)
     threading.Thread(target=sensor.run).start()
     sensors.append(sensor)
 
     roller_length = racer.getint('roller_length_mm') / 1000
-    converters.append(SpeedConverter(rotations, base_topic + '.speed', roller_length))
-    converters.append(DistanceConverter(rotations, base_topic + '.distance', roller_length))
+    converters.append(SpeedConverter(rotations, section + '.speed', roller_length))
+    converters.append(DistanceConverter(rotations, section + '.distance', roller_length))
 
 
 def init_components():
@@ -38,7 +38,7 @@ def init_components():
     racer_index = 0
     for section in app.config:
         if 'racer' in section:
-            init_racer(base_url, max_poll_rate, racer_index, app.config[section])
+            init_racer(base_url, max_poll_rate, racer_index, section)
             racer_index += 1
 
 

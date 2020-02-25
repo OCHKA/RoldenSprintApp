@@ -1,7 +1,5 @@
 #:kivy 1.0
 
-<RacerTemplate@RacerWidget>:
-    race_distance: app.config.getint('roldensprint', 'race_distance_m')
 
 <RoldenSprintScreenManager>:
     RaceScreen:
@@ -11,15 +9,22 @@
             orientation: 'horizontal'
             spacing: 10
 
-            RacerTemplate:
-                name: app.config.get('racer0', 'name')
-                speed_topic: 'racer.0.speed'
-                distance_topic: 'racer.0.distance'
+            $for(section in config)
+            $if('racer' in section)
+            RacerWidget:
+                id: $(section)
+                race_distance: app.config.getint('roldensprint', 'race_distance_m')
 
-#            GraphWidget:
-#                index: 0
-#                value: app.racers[0].speed_ms * root.speed_multiplier
-#                max_value: 80
+                name: app.config.get('$(section)', 'name')
+                speed_topic: '$(section).speed'
+                distance_topic:  '$(section).distance'
+
+                GraphWidget:
+                    index: 0
+                    value: $(section).speed
+                    max_value: 80
+            $endif
+            $endfor
 
     CountDownScreen:
         id: countdown
