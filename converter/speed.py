@@ -26,6 +26,9 @@ class SpeedConverter:
     def _on_update(self, rotations):
         timestamp = time.time()
 
+        if rotations == self._prev_rotations:
+            return
+
         if self._prev_timestamp:
             speed_ms = self._convert(timestamp, rotations)
             pub.sendMessage(self._speed_topic, speed=speed_ms)

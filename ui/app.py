@@ -12,7 +12,7 @@ from .expander_builder import ExpanderBuilder
 class RoldenSprintApp(App):
     screen: RoldenSprintScreenManager
 
-    def __init__(self, racer_count: int = 2):
+    def __init__(self):
         super(RoldenSprintApp, self).__init__()
 
         context = copy(get_current_context())

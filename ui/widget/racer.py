@@ -20,6 +20,7 @@ class RacerWidget(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        self._speed_anim = None
         self._start_distance = None
 
     def reset_position(self):
@@ -30,7 +31,7 @@ class RacerWidget(BoxLayout):
         :param speed: in meters per second
         """
         speed_kph = speed * 3.6
-        anim = Animation(speed=speed_kph)
+        anim = Animation(speed=speed_kph, duration=1/8)
         anim.start(self)
 
     def on_speed(self, instance, value):
