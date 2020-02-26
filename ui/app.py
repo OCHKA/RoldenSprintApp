@@ -1,6 +1,5 @@
 from copy import copy
 from kivy.app import App
-from kivy.logger import Logger
 from kivy.uix.screenmanager import FadeTransition
 from kivy.context import get_current_context
 from kivy.lang.builder import Builder
@@ -39,6 +38,5 @@ class RoldenSprintApp(App):
         context.pop()
         super(RoldenSprintApp, self).build()
 
-        Logger.info(f"App: Loaded configuration file <{self.get_application_config()}>")
         self.screen = RoldenSprintScreenManager(transition=FadeTransition())
         return self.screen

@@ -24,9 +24,12 @@ class RoldenSprintSensor:
         self._loop = asyncio.new_event_loop()
 
         self._max_poll_rate = max_poll_rate
+        self._stop_requested = False
 
     def run(self):
-        while True:
+        self._stop_requested = False
+
+        while self._stop_requested:
             start_time = time.time()
 
             # forward sensor data
@@ -43,7 +46,8 @@ class RoldenSprintSensor:
                 time.sleep(unused_time)
 
     def stop(self):
-        pass  # TODO: should actually stop running run() method
+        self._stop_requested = True
+        self._loop.stop()
 
     async def poll(self) -> Optional[int]:
         if not self._coap:
