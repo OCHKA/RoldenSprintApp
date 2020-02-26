@@ -1,4 +1,4 @@
-from pubsub import pub
+from message.io_service import IoService
 
 
 class DistanceConverter:
@@ -13,13 +13,19 @@ class DistanceConverter:
         :param length: length of circle in meters
         """
 
+        self._io = IoService(__name__)
+
         self._rotations_topic = rotations_topic
         self._distance_topic = distance_topic
 
         self._length = length
 
-        pub.subscribe(self._on_update, rotations_topic)
+        self._io.subscribe(rotations_topic, self._on_update)
+        self._io.start()
+
+    def stop(self):
+        self._io.stop()
 
     def _on_update(self, rotations):
         distance = rotations * self._length
-        pub.sendMessage(self._distance_topic, distance=distance)
+        self._io.publish(self._distance_topic, distance)

@@ -1,4 +1,4 @@
+paho-mqtt
 pyexpander
-PyPubSub
 Kivy==2.0.0rc1
 aiocoap==0.4b1

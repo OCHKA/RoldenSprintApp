@@ -1,5 +1,6 @@
 import time
-from pubsub import pub
+
+from message.io_service import IoService
 
 
 class SpeedConverter:
@@ -14,6 +15,8 @@ class SpeedConverter:
         :param length: length of circle in meters
         """
 
+        self._io = IoService(__name__)
+
         self._rotations_topic = rotations_topic
         self._speed_topic = speed_topic
 
@@ -21,7 +24,11 @@ class SpeedConverter:
         self._prev_timestamp = 0
         self._prev_rotations = 0
 
-        pub.subscribe(self._on_update, rotations_topic)
+        self._io.subscribe(rotations_topic, self._on_update)
+        self._io.start()
+
+    def stop(self):
+        self._io.stop()
 
     def _on_update(self, rotations):
         timestamp = time.time()
@@ -31,7 +38,7 @@ class SpeedConverter:
 
         if self._prev_timestamp:
             speed_ms = self._convert(timestamp, rotations)
-            pub.sendMessage(self._speed_topic, speed=speed_ms)
+            self._io.publish(self._speed_topic, speed_ms)
 
         self._prev_rotations = rotations
         self._prev_timestamp = timestamp

@@ -3,19 +3,24 @@ import time
 import aiocoap
 import logging
 import asyncio
+import threading
 from typing import Optional
-from pubsub import pub
+
+from message.io_service import IoService
 
 os.environ['AIOCOAP_CLIENT_TRANSPORT'] = 'simple6'  # Android doesn't work with udp6
 
 
-class RoldenSprintSensor:
+class RoldenSprintSensor(threading.Thread):
     """
     Client for COAP-based RoldenSprintSensor device
     """
 
-    def __init__(self, topic: str, url_base: str, index: int, max_poll_rate: int = 30):
+    def __init__(self, topic: str, url_base: str, index: int, max_poll_rate: int = 30, **kwargs):
+        super().__init__(name=__name__, **kwargs)
+
         self._logger = logging.getLogger(__name__)
+        self._io = IoService(__name__)
         self._topic = topic
 
         self._coap: Optional[aiocoap.Context] = None
@@ -26,16 +31,21 @@ class RoldenSprintSensor:
         self._max_poll_rate = max_poll_rate
         self._stop_requested = False
 
+    def __del__(self):
+        self.stop()
+
     def run(self):
         self._stop_requested = False
 
-        while self._stop_requested:
+        self._io.start()
+
+        while not self._stop_requested:
             start_time = time.time()
 
             # forward sensor data
             rotations = self._loop.run_until_complete(self.poll())
             if rotations:
-                pub.sendMessage(self._topic, rotations=rotations)
+                self._io.publish(self._topic, rotations)
 
             # wait for next run
             max_poll_time = 1 / self._max_poll_rate
@@ -47,6 +57,7 @@ class RoldenSprintSensor:
 
     def stop(self):
         self._stop_requested = True
+        self._io.stop()
         self._loop.stop()
 
     async def poll(self) -> Optional[int]:
