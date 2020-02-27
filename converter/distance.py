@@ -24,9 +24,6 @@ class DistanceConverter:
         self._io.subscribe(rotations_topic, self._on_update)
         self._io.start()
 
-    def stop(self):
-        self._io.stop()
-
     def _on_update(self, rotations_json: str):
         rotations, timestamp = json.loads(rotations_json)
 

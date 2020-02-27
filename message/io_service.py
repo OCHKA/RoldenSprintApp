@@ -1,4 +1,5 @@
 import threading
+import logging
 import paho.mqtt.client as mqtt
 
 BROKER_URL = 'localhost'
@@ -16,11 +17,14 @@ class IoService(threading.Thread):
     def __init__(self, name: str,  **kwargs):
         super().__init__(name=f'{name}.io_service', **kwargs)
 
+        self._name = name
         self._callbacks = {}
 
         self._client = mqtt.Client()
         self._client.on_message = self._on_message
         self._client.connect(BROKER_URL, BROKER_PORT)
+
+        self.subscribe('shutdown.io', self.stop)
 
     def __del__(self):
         self.stop()
@@ -28,8 +32,10 @@ class IoService(threading.Thread):
     def run(self) -> None:
         self._client.loop_forever()
 
-    def stop(self):
+    def stop(self, message: bytes = ""):
         self._client.disconnect()
+        if message:
+            logging.info(f"IoService {self._name}: {message.decode('utf-8')}")
 
     @topic_dots_to_slashes
     def publish(self, topic: str, payload):

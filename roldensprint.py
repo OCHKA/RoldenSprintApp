@@ -5,19 +5,22 @@ import logging
 from ui.app import RoldenSprintApp
 from converter.speed import SpeedConverter
 from converter.distance import DistanceConverter
+from message.io_service import IoService
 
 
 class RoldenSprint:
     def __init__(self):
         self.app = RoldenSprintApp()
         self.services = []
+        self._io = IoService(__name__)
 
     def run(self):
+        self._io.start()
+
         threading.Thread(target=self.init_components).start()
         self.app.run()
 
-        for service in self.services:
-            service.stop()
+        self._io.publish('shutdown.io', 'Closing...')
 
     def init_components(self):
         # wait for loading of config file
