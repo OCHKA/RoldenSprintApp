@@ -1,3 +1,4 @@
+import json
 from message.io_service import IoService
 
 
@@ -26,6 +27,8 @@ class DistanceConverter:
     def stop(self):
         self._io.stop()
 
-    def _on_update(self, rotations):
+    def _on_update(self, rotations_json: str):
+        rotations, timestamp = json.loads(rotations_json)
+
         distance = rotations * self._length
-        self._io.publish(self._distance_topic, distance)
+        self._io.publish(self._distance_topic, json.dumps(distance))

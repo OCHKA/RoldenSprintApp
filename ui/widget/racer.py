@@ -14,8 +14,9 @@ class RacerWidget(BoxLayout):
     race_distance = NumericProperty(1000)
 
     speed = NumericProperty(0)
+    distance = NumericProperty(0)
+
     _speed_text = StringProperty('000 KPH')
-    _distance = NumericProperty(0)
     _progress_text = StringProperty(f"0 / {race_distance.defaultvalue} M")
 
     def __init__(self, **kwargs):
@@ -48,14 +49,14 @@ class RacerWidget(BoxLayout):
         if self._start_distance is None:
             self._start_distance = distance
 
-        self._distance = distance - self._start_distance
-        self._update_progress_text()
+        anim = Animation(distance=distance - self._start_distance, duration=1 / 5)
+        anim.start(self)
 
-    def _update_progress_text(self):
-        if self._distance >= self.race_distance:
+    def on_distance(self, instance, value):
+        if value >= self.race_distance:
             self._progress_text = "FINISHED"
         else:
-            self._progress_text = f"{self._distance:.2f} / {self.race_distance} M"
+            self._progress_text = f"{self.distance:.2f} / {self.race_distance} M"
 
     def on_speed_topic(self, instance, value):
         self._io.subscribe(value, self.on_speed_data)
@@ -97,5 +98,5 @@ Builder.load_string('''
     
     ProgressBar:
         max: root.race_distance
-        value: root._distance
+        value: root.distance
 ''')

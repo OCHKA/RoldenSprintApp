@@ -40,10 +40,6 @@ class RoldenSprint:
 
         rotations = section + '.rotations'
 
-        sensor = RoldenSprintSensor(rotations, base_url, index, max_poll_rate)
-        sensor.start()
-        self.services.append(sensor)
-
         roller_length = racer.getint('roller_length_mm') / 1000
         speed = SpeedConverter(rotations, section + '.speed', roller_length)
         self.services.append(speed)
