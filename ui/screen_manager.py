@@ -24,5 +24,5 @@ class RoldenSprintScreenManager(ScreenManager):
         def switch_to_race(dt):
             self.current = 'race'
 
-        if value <= 0:
+        if self._countdown.is_finished:
             Clock.schedule_once(switch_to_race, 1 / 2)

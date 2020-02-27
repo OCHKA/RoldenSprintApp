@@ -1,23 +1,24 @@
 from kivy.uix.screenmanager import Screen
-from kivy.properties import NumericProperty, StringProperty
-from kivy.clock import Clock
+from kivy.properties import NumericProperty
+from kivy.animation import Animation
 
-TIMER_DEFAULT_VALUE = 3
+TIMER_TARGET_VALUE = 420
 
 
 class CountDownScreen(Screen):
-    timer = NumericProperty(TIMER_DEFAULT_VALUE)
+    timer = NumericProperty(0)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self._anim = Animation(timer=TIMER_TARGET_VALUE, duration=3)
 
     def on_enter(self, *args):
-        self.timer = TIMER_DEFAULT_VALUE
-        Clock.schedule_once(self._update)
+        self.timer = 0
+        self._anim.start(self)
 
-    def _update(self, dt):
-        self.timer -= dt
+    def on_timer(self, instance, value):
+        self.text = str(int(value))
 
-        if self.timer <= 0:
-            self.timer = 0
-            self.text = "GO"
-        else:
-            self.text = f"{self.timer:.2f}"
-            Clock.schedule_once(self._update,  1 / 10)
+    @property
+    def is_finished(self) -> bool:
+        return self.timer == TIMER_TARGET_VALUE
