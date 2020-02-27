@@ -3,7 +3,6 @@ import time
 import logging
 
 from ui.app import RoldenSprintApp
-from sensor.roldensprint import RoldenSprintSensor
 from converter.speed import SpeedConverter
 from converter.distance import DistanceConverter
 
