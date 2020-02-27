@@ -1,4 +1,4 @@
-import time
+import json
 
 from message.io_service import IoService
 
@@ -21,8 +21,8 @@ class SpeedConverter:
         self._speed_topic = speed_topic
 
         self._length = length
-        self._prev_timestamp = 0
-        self._prev_rotations = 0
+        self._rotations = 0
+        self._timestamp = 0
 
         self._io.subscribe(rotations_topic, self._on_update)
         self._io.start()
@@ -30,21 +30,23 @@ class SpeedConverter:
     def stop(self):
         self._io.stop()
 
-    def _on_update(self, rotations):
-        timestamp = time.time()
+    def _on_update(self, sensor_sample_json: str):
+        # time in microseconds
+        rotations, timestamp = json.loads(sensor_sample_json)
 
-        if rotations == self._prev_rotations:
+        if rotations == self._rotations:
             return
 
-        if self._prev_timestamp:
-            speed_ms = self._convert(timestamp, rotations)
-            self._io.publish(self._speed_topic, speed_ms)
+        # update speed
+        if self._timestamp:
+            speed_ms = self._convert(rotations - self._rotations, timestamp - self._timestamp)
+            self._io.publish(self._speed_topic, json.dumps(speed_ms))
 
-        self._prev_rotations = rotations
-        self._prev_timestamp = timestamp
+        # record increased distance
+        self._timestamp = timestamp
+        self._rotations = rotations
 
-    def _convert(self, timestamp, new_rotations_value):
-        elapsed_time = timestamp - self._prev_timestamp
-        rotations = new_rotations_value - self._prev_rotations
-
-        return rotations / elapsed_time * self._length
+    def _convert(self, rotations, elapsed_time_usec):
+        elapsed_time_s = elapsed_time_usec / 1e6
+        distance_m = rotations * self._length
+        return distance_m / elapsed_time_s

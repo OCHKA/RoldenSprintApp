@@ -1,9 +1,10 @@
-import logging
+import json
 from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
 from kivy.animation import Animation
-from pubsub import pub
+
+from message.io_service import IoService
 
 
 class RacerWidget(BoxLayout):
@@ -20,24 +21,30 @@ class RacerWidget(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        self._io = IoService(__name__)
+        self._io.start()
+
         self._speed_anim = None
         self._start_distance = None
 
     def reset_position(self):
         self._start_distance = self.distance
 
-    def on_speed_data(self, speed):
+    def on_speed_data(self, speed_json: str):
         """
-        :param speed: in meters per second
+        :param speed_json: in meters per second
         """
+        speed = json.loads(speed_json)
         speed_kph = speed * 3.6
-        anim = Animation(speed=speed_kph, duration=1/8)
+        anim = Animation(speed=speed_kph, duration=1 / 5)
         anim.start(self)
 
     def on_speed(self, instance, value):
         self._speed_text = f"{value:06.2f} KPH"
 
-    def on_distance_data(self, distance):
+    def on_distance_data(self, distance_json: str):
+        distance = json.loads(distance_json)
+
         if self._start_distance is None:
             self._start_distance = distance
 
@@ -51,12 +58,10 @@ class RacerWidget(BoxLayout):
             self._progress_text = f"{self._distance:.2f} / {self.race_distance} M"
 
     def on_speed_topic(self, instance, value):
-        logging.info(f"{__name__}: subscribed to: {value}")
-        pub.subscribe(self.on_speed_data, value)
+        self._io.subscribe(value, self.on_speed_data)
 
     def on_distance_topic(self, instance, value):
-        logging.info(f"{__name__}: subscribed to: {value}")
-        pub.subscribe(self.on_distance_data, self.distance_topic)
+        self._io.subscribe(value, self.on_distance_data)
 
 
 Builder.load_string('''
