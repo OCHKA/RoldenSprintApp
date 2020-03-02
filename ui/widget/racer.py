@@ -29,7 +29,7 @@ class RacerWidget(BoxLayout):
         self._start_distance = None
 
     def reset_position(self):
-        self._start_distance = self.distance
+        self._start_distance = None
 
     def on_speed_data(self, speed_json: str):
         """
@@ -63,6 +63,10 @@ class RacerWidget(BoxLayout):
 
     def on_distance_topic(self, instance, value):
         self._io.subscribe(value, self.on_distance_data)
+
+    @property
+    def is_finished(self):
+        return self.distance >= self._start_distance
 
 
 Builder.load_string('''

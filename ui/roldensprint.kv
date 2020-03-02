@@ -1,36 +1,47 @@
 #:kivy 1.0
 
+<RaceScreen>
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: 5
+
+        $for(section in config)
+        $if('racer' in section)
+        RacerWidget:
+            id: $(section)
+            race_distance: app.config.getint('roldensprint', 'race_distance_m')
+
+            name: app.config.get('$(section)', 'name')
+            speed_topic: '$(section).speed'
+            distance_topic:  '$(section).distance'
+
+            GraphWidget:
+                index: 0
+                value: $(section).speed
+                max_value: 80
+        $endif
+        $endfor
+
+<ScaleLabel@Label>:
+    _scale: 1. if self.texture_size[0] < self.width else float(self.width) / self.texture_size[0]
+    canvas.before:
+        PushMatrix
+        Scale:
+            origin: self.center
+            x: self._scale or 1.
+            y: self._scale or 1.
+    canvas.after:
+        PopMatrix
 
 <RoldenSprintScreenManager>:
     RaceScreen:
         name: 'race'
-
-        BoxLayout:
-            orientation: 'horizontal'
-            spacing: 5
-
-            $for(section in config)
-            $if('racer' in section)
-            RacerWidget:
-                id: $(section)
-                race_distance: app.config.getint('roldensprint', 'race_distance_m')
-
-                name: app.config.get('$(section)', 'name')
-                speed_topic: '$(section).speed'
-                distance_topic:  '$(section).distance'
-
-                GraphWidget:
-                    index: 0
-                    value: $(section).speed
-                    max_value: 80
-            $endif
-            $endfor
 
     CountDownScreen:
         id: countdown
         name: 'countdown'
         text: 'READY'
 
-        Label:
+        ScaleLabel:
             text: countdown.text
-            font_size: '420sp'
+            font_size: 1000

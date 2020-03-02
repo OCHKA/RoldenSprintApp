@@ -20,7 +20,7 @@ class CountDownScreen(Screen):
         self.text = ENTER_TEXT
 
     def on_enter(self, *args):
-        self._anim = Animation(timer=TIMER_TARGET_VALUE, duration=random.randint(2, 8))
+        self._anim = Animation(timer=TIMER_TARGET_VALUE, duration=random.randint(2, 5))
         self._anim.start(self)
 
     def on_timer(self, instance, value):

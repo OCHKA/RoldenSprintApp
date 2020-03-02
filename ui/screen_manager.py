@@ -1,6 +1,5 @@
 from kivy.uix.screenmanager import ScreenManager
 from kivy.core.window import Window
-from kivy.clock import Clock
 
 from .screen.race import RaceScreen
 from .screen.countdown import CountDownScreen
@@ -21,8 +20,5 @@ class RoldenSprintScreenManager(ScreenManager):
             self.current = 'countdown'
 
     def _on_countdown_timer(self, instance, value):
-        def switch_to_race(dt):
-            self.current = 'race'
-
         if self._countdown.is_finished:
-            Clock.schedule_once(switch_to_race, 1 / 2)
+            self.current = 'race'
