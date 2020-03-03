@@ -1,6 +1,6 @@
 import json
 
-from message.io_service import IoService
+from core.io_service import IoService
 
 
 class SpeedConverter:
@@ -8,23 +8,23 @@ class SpeedConverter:
     Converts samples of rotations to speed in ms
     """
 
-    def __init__(self, rotations_topic: str, speed_topic: str, length: int):
+    def __init__(self, input: str, output: str, length: int):
         """
-        :param rotations_topic: topic to listen for rotations data
-        :param speed_topic: topic to send speed data
+        :param input: topic to listen for rotations data
+        :param output: topic to send speed data
         :param length: length of circle in meters
         """
 
         self._io = IoService(__name__)
 
-        self._rotations_topic = rotations_topic
-        self._speed_topic = speed_topic
+        self._rotations_topic = input
+        self._speed_topic = output
 
         self._length = length
         self._rotations = 0
         self._timestamp = 0
 
-        self._io.subscribe(rotations_topic, self._on_update)
+        self._io.subscribe(self._rotations_topic, self._on_update)
         self._io.start()
 
     def _on_update(self, sensor_sample_json: str):

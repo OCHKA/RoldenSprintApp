@@ -4,7 +4,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
 from kivy.animation import Animation
 
-from message.io_service import IoService
+from core.io_service import IoService
 
 
 class RacerWidget(BoxLayout):

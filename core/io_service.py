@@ -24,7 +24,7 @@ class IoService(threading.Thread):
         self._client.on_message = self._on_message
         self._client.connect(BROKER_URL, BROKER_PORT)
 
-        self.subscribe('shutdown.io', self.stop)
+        self.subscribe('shutdown', self.stop)
 
     def __del__(self):
         self.stop()
@@ -35,7 +35,7 @@ class IoService(threading.Thread):
     def stop(self, message: bytes = ""):
         self._client.disconnect()
         if message:
-            logging.info(f"IoService {self._name}: {message.decode('utf-8')}")
+            logging.info(f"core.io_service: stop {self._name} '{message.decode('utf-8')}'")
 
     @topic_dots_to_slashes
     def publish(self, topic: str, payload):

@@ -1,54 +1,25 @@
-import threading
-import time
-import logging
+import json
 
-from ui.app import RoldenSprintApp
-from converter.speed import SpeedConverter
-from converter.distance import DistanceConverter
-from message.io_service import IoService
+from core import registry
 
 
-class RoldenSprint:
-    def __init__(self):
-        self.app = RoldenSprintApp()
-        self.services = []
-        self._io = IoService(__name__)
-
-    def run(self):
-        self._io.start()
-
-        threading.Thread(target=self.init_components).start()
-        self.app.run()
-
-        self._io.publish('shutdown.io', 'Closing...')
-
-    def init_components(self):
-        # wait for loading of config file
-        while not self.app.config:
-            time.sleep(1 / 10)
-
-        base_url = self.app.config.get('sensor', 'url')
-        max_poll_rate = self.app.config.getint('sensor', 'max_poll_rate')
-
-        racer_index = 0
-        for section in self.app.config:
-            if 'racer' in section:
-                self.init_racer(base_url, max_poll_rate, racer_index, section)
-                racer_index += 1
-
-    def init_racer(self, base_url: str, max_poll_rate: 30, index: int, section):
-        racer = self.app.config[section]
-        logging.info(f"init_racer: '{racer['name']}'")
-
-        rotations = section + '.rotations'
-
-        roller_length = racer.getint('roller_length_mm') / 1000
-        speed = SpeedConverter(rotations, section + '.speed', roller_length)
-        self.services.append(speed)
-
-        distance = DistanceConverter(rotations, section + '.distance', roller_length)
-        self.services.append(distance)
+# TODO: make config path more flexible
+with open('roldensprint.json') as conf_file:
+    conf = json.load(conf_file)
 
 
-roldensprint = RoldenSprint()
-roldensprint.run()
+# startup per-racer infrastructure
+for index, racer in enumerate(conf['racers']):
+    def topic(path):
+        return '.'.join(path)
+
+
+    samples = topic(['sensor', str(index), 'samples'])
+    speed = topic(['sensor', str(index), 'speed'])
+    distance = topic(['sensor', str(index), 'distance'])
+
+    registry.register_component('converter.speed', input=samples, output=speed, length=racer['roller_length'])
+    registry.register_component('converter.distance', input=samples, output=distance, length=racer['roller_length'])
+
+
+registry.register_component('ui')

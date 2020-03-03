@@ -1,0 +1,15 @@
+{
+  "sprint": {
+    "distance": 5000
+  },
+  "racers": [
+    {
+      "name": "SECT1",
+      "roller_length": 200
+    },
+    {
+      "name": "SECT2",
+      "roller_length": 200
+    }
+  ]
+}
