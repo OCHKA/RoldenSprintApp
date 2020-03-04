@@ -13,27 +13,15 @@ from .expander_builder import ExpanderBuilder
 class RoldenSprintApp(App, Component):
     screen: RoldenSprintScreenManager
 
-    def __init__(self):
+    def __init__(self, race_distance, racers: list):
         super().__init__()
 
+        self.race_distance = race_distance
+        self.racers = racers
+
         context = copy(get_current_context())
-        context['Builder'] = ExpanderBuilder(self, Builder, )
+        context['Builder'] = ExpanderBuilder(self, Builder, {'racers': self.racers})
         context.push()
-
-    def build_config(self, config):
-        config.setdefaults('roldensprint', {
-            'race_distance_m': 3000
-        })
-        config.setdefaults('sensor', {
-            'url': f'coap://192.168.4.1/rotations',
-            'max_poll_rate': 30
-        })
-
-        # default racer config. should be copy-pasted and re`name`d to add more racers
-        config.setdefaults('racer0', {
-            'name': f'SECT0',
-            'roller_length_mm': 200
-        })
 
     def build(self):
         context = get_current_context()

@@ -3,7 +3,7 @@ from pyexpander.lib import expandToStr
 
 
 class ExpanderBuilder(BuilderBase):
-    def __init__(self, app, builder):
+    def __init__(self, app, builder, definitions: dict):
         super(ExpanderBuilder, self).__init__()
         self.app = app
         self.files = builder.files
@@ -11,8 +11,8 @@ class ExpanderBuilder(BuilderBase):
         self.templates = builder.templates
         self.rules = builder.rules
         self.rulectx = builder.rulectx
+        self.defs = definitions
 
     def load_string(self, string, **kwargs):
-        defs = {'config': self.app.config}
-        xstring = expandToStr(string, external_definitions=defs)[0]
+        xstring = expandToStr(string, external_definitions=self.defs)[0]
         return super(ExpanderBuilder, self).load_string(xstring, **kwargs)

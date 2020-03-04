@@ -7,6 +7,7 @@ from core import registry
 with open('roldensprint.json') as conf_file:
     conf = json.load(conf_file)
 
+ui_racers = []
 
 # startup per-racer infrastructure
 for index, racer in enumerate(conf['racers']):
@@ -18,8 +19,10 @@ for index, racer in enumerate(conf['racers']):
     speed = topic(['sensor', str(index), 'speed'])
     distance = topic(['sensor', str(index), 'distance'])
 
+    ui_racers.append({'name': racer['name'], 'speed': speed, 'distance': distance})
+
     registry.register_component('converter.speed', input=samples, output=speed, length=racer['roller_length'])
     registry.register_component('converter.distance', input=samples, output=distance, length=racer['roller_length'])
 
 
-registry.register_component('ui')
+registry.register_component('ui', race_distance=conf['sprint']['distance'], racers=ui_racers)

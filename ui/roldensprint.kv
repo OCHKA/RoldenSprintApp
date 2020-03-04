@@ -5,25 +5,19 @@
         orientation: 'horizontal'
         spacing: 5
 
-        $py(racer_index = 0)
-        $for(section in config)
-        $if('racer' in section)
-
+        $for(index, racer in enumerate(racers))
         RacerWidget:
-            id: $(section)
-            race_distance: app.config.getint('roldensprint', 'race_distance_m')
+            id: racer$(index)
+            race_distance: app.race_distance
 
-            name: app.config.get('$(section)', 'name')
-            speed_topic: 'sensor.$(racer_index).speed'
-            distance_topic:  'sensor.$(racer_index).distance'
+            name: '$(racer['name'])'
+            speed_topic: '$(racer['speed'])'
+            distance_topic: '$(racer['distance'])'
 
             GraphWidget:
                 index: 0
-                value: $(section).speed
+                value: racer$(index).speed
                 max_value: 80
-
-        $py(racer_index += 1)
-        $endif
         $endfor
 
 <ScaleLabel@Label>:
