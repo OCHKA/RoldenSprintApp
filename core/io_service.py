@@ -14,8 +14,8 @@ def topic_dots_to_slashes(func):
 
 
 class IoService(threading.Thread):
-    def __init__(self, name: str,  **kwargs):
-        super().__init__(name=f'{name}.io_service', **kwargs)
+    def __init__(self, name: str, **kwargs):
+        super().__init__(**kwargs)
 
         self._name = name
         self._callbacks = {}
@@ -29,8 +29,8 @@ class IoService(threading.Thread):
     def __del__(self):
         self.stop()
 
-    def run(self) -> None:
-        self._client.loop_forever()
+    def run(self):
+        return self._client.loop_forever()
 
     def stop(self, message: bytes = ""):
         self._client.disconnect()

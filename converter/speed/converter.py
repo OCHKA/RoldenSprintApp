@@ -1,9 +1,9 @@
 import json
 
-from core.io_service import IoService
+from core.component import Component
 
 
-class SpeedConverter:
+class SpeedConverter(Component):
     """
     Converts samples of rotations to speed in ms
     """
@@ -15,7 +15,7 @@ class SpeedConverter:
         :param length: length of circle in meters
         """
 
-        self._io = IoService(__name__)
+        super().__init__()
 
         self._rotations_topic = input
         self._speed_topic = output
@@ -25,7 +25,6 @@ class SpeedConverter:
         self._timestamp = 0
 
         self._io.subscribe(self._rotations_topic, self._on_update)
-        self._io.start()
 
     def _on_update(self, sensor_sample_json: str):
         # time in microseconds

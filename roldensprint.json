@@ -5,11 +5,11 @@
   "racers": [
     {
       "name": "SECT1",
-      "roller_length": 200
+      "roller_length": 0.2
     },
     {
       "name": "SECT2",
-      "roller_length": 200
+      "roller_length": 0.2
     }
   ]
 }

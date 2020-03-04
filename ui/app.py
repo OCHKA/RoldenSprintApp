@@ -4,15 +4,17 @@ from kivy.uix.screenmanager import FadeTransition
 from kivy.context import get_current_context
 from kivy.lang.builder import Builder
 
+from core.component import Component
+
 from .screen_manager import RoldenSprintScreenManager
 from .expander_builder import ExpanderBuilder
 
 
-class RoldenSprintApp(App):
+class RoldenSprintApp(App, Component):
     screen: RoldenSprintScreenManager
 
     def __init__(self):
-        super(RoldenSprintApp, self).__init__()
+        super().__init__()
 
         context = copy(get_current_context())
         context['Builder'] = ExpanderBuilder(self, Builder, )
@@ -40,3 +42,6 @@ class RoldenSprintApp(App):
 
         self.screen = RoldenSprintScreenManager(transition=FadeTransition())
         return self.screen
+
+    def on_stop(self):
+        self._io.publish('shutdown', None)

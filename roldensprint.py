@@ -14,7 +14,7 @@ for index, racer in enumerate(conf['racers']):
         return '.'.join(path)
 
 
-    samples = topic(['sensor', str(index), 'samples'])
+    samples = topic(['sensor', str(index), 'sample'])
     speed = topic(['sensor', str(index), 'speed'])
     distance = topic(['sensor', str(index), 'distance'])
 

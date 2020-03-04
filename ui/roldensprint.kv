@@ -5,20 +5,24 @@
         orientation: 'horizontal'
         spacing: 5
 
+        $py(racer_index = 0)
         $for(section in config)
         $if('racer' in section)
+
         RacerWidget:
             id: $(section)
             race_distance: app.config.getint('roldensprint', 'race_distance_m')
 
             name: app.config.get('$(section)', 'name')
-            speed_topic: '$(section).speed'
-            distance_topic:  '$(section).distance'
+            speed_topic: 'sensor.$(racer_index).speed'
+            distance_topic:  'sensor.$(racer_index).distance'
 
             GraphWidget:
                 index: 0
                 value: $(section).speed
                 max_value: 80
+
+        $py(racer_index += 1)
         $endif
         $endfor
 

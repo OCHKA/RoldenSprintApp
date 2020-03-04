@@ -4,10 +4,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
 from kivy.animation import Animation
 
-from core.io_service import IoService
+from core.component import Component
 
 
-class RacerWidget(BoxLayout):
+class RacerWidget(BoxLayout, Component):
     name = StringProperty("nobody")
     speed_topic = StringProperty()
     distance_topic = StringProperty()
@@ -21,9 +21,6 @@ class RacerWidget(BoxLayout):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        self._io = IoService(__name__)
-        self._io.start()
 
         self._speed_anim = None
         self._start_distance = None

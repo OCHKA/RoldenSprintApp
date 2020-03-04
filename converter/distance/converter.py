@@ -1,9 +1,9 @@
 import json
 
-from core.io_service import IoService
+from core.component import Component
 
 
-class DistanceConverter:
+class DistanceConverter(Component):
     """
     Converts samples of rotations to distance in meters
     """
@@ -15,7 +15,7 @@ class DistanceConverter:
         :param length: length of circle in meters
         """
 
-        self._io = IoService(__name__)
+        super().__init__()
 
         self._rotations_topic = input
         self._distance_topic = output
@@ -23,7 +23,6 @@ class DistanceConverter:
         self._length = length
 
         self._io.subscribe(self._rotations_topic, self._on_update)
-        self._io.start()
 
     def _on_update(self, rotations_json: str):
         rotations, timestamp = json.loads(rotations_json)
