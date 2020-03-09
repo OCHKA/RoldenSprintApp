@@ -32,4 +32,4 @@ class RoldenSprintApp(App, Component):
         return self.screen
 
     def on_stop(self):
-        self._io.publish('shutdown', None)
+        self._io.publish('shutdown')

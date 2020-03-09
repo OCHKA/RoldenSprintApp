@@ -38,7 +38,7 @@ class IoService(threading.Thread):
             logging.info(f"core.io_service: stop {self._name} '{message.decode('utf-8')}'")
 
     @topic_dots_to_slashes
-    def publish(self, topic: str, payload):
+    def publish(self, topic: str, payload=None):
         self._client.publish(topic, payload)
 
     @topic_dots_to_slashes
