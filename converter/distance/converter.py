@@ -1,5 +1,3 @@
-import json
-
 from core.component import Component
 
 
@@ -24,8 +22,10 @@ class DistanceConverter(Component):
 
         self._io.subscribe(self._rotations_topic, self._on_update)
 
-    def _on_update(self, rotations_json: str):
-        rotations, timestamp = json.loads(rotations_json)
+    def _on_update(self, rotations: int, *args, **kwargs):
+        """
+        :param rotations: number of rotations
+        """
 
         distance = rotations * self._length
-        self._io.publish(self._distance_topic, json.dumps(distance))
+        self._io.publish(self._distance_topic, distance=distance)

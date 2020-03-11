@@ -1,6 +1,7 @@
 import threading
-import logging
 import paho.mqtt.client as mqtt
+import json
+import logging
 
 BROKER_URL = 'localhost'
 BROKER_PORT = 1883
@@ -10,6 +11,7 @@ def topic_dots_to_slashes(func):
     def decorator(instance, topic: str, *args, **kwargs):
         topic = topic.replace('.', '/')
         return func(instance, topic, *args, **kwargs)
+
     return decorator
 
 
@@ -32,14 +34,15 @@ class IoService(threading.Thread):
     def run(self):
         return self._client.loop_forever()
 
-    def stop(self, message: bytes = ""):
+    def stop(self, message=""):
         self._client.disconnect()
         if message:
-            logging.info(f"core.io_service: stop {self._name} '{message.decode('utf-8')}'")
+            logging.info(f"core.io_service: stop {self._name} '{message}'")
 
     @topic_dots_to_slashes
-    def publish(self, topic: str, payload=None):
-        self._client.publish(topic, payload)
+    def publish(self, topic: str, **kwargs):
+        payload_json = json.dumps(kwargs)
+        self._client.publish(topic, payload_json)
 
     @topic_dots_to_slashes
     def subscribe(self, topic: str, callback: callable):
@@ -49,4 +52,15 @@ class IoService(threading.Thread):
     def _on_message(self, client, userdata, msg):
         callback = self._callbacks.get(msg.topic, None)
         if callback:
-            callback(msg.payload)
+            payload = json.loads(msg.payload, encoding='ascii')
+            return self.__run_callback(callback, payload)
+
+    def __run_callback(self, callback, payload):
+        try:
+            if type(payload) == list:
+                callback(*payload)
+            else:
+                callback(**payload)
+        except Exception as exception:
+            logging.error(f"IoService: {self._name}: {exception}", exc_info=True)
+            quit(1)

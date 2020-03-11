@@ -1,5 +1,3 @@
-import json
-
 from core.component import Component
 
 
@@ -26,9 +24,11 @@ class SpeedConverter(Component):
 
         self._io.subscribe(self._rotations_topic, self._on_update)
 
-    def _on_update(self, sensor_sample_json: str):
-        # time in microseconds
-        rotations, timestamp = json.loads(sensor_sample_json)
+    def _on_update(self, rotations: int, timestamp: int, *args, **kwargs):
+        """
+        :param rotations: number of rotations
+        :param timestamp: time of last pass in microseconds
+        """
 
         if rotations == self._rotations:
             return
@@ -36,7 +36,7 @@ class SpeedConverter(Component):
         # update speed
         if self._timestamp:
             speed_ms = self._convert(rotations - self._rotations, timestamp - self._timestamp)
-            self._io.publish(self._speed_topic, json.dumps(speed_ms))
+            self._io.publish(self._speed_topic, speed=speed_ms)
 
         # record increased distance
         self._timestamp = timestamp
