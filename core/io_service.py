@@ -2,6 +2,7 @@ import threading
 import paho.mqtt.client as mqtt
 import json
 import logging
+import time
 
 BROKER_URL = 'localhost'
 BROKER_PORT = 1883
@@ -22,7 +23,7 @@ class IoService(threading.Thread):
         self._name = name
         self._callbacks = {}
 
-        self._client = mqtt.Client()
+        self._client = mqtt.Client(f"{name}-{int(time.time() * 1000)}-")
         self._client.on_message = self._on_message
         self._client.connect(BROKER_URL, BROKER_PORT)
 
