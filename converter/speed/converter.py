@@ -24,7 +24,7 @@ class SpeedConverter(Component):
 
         self._io.subscribe(self._rotations_topic, self._on_update)
 
-    def _on_update(self, rotations: int, timestamp: int, *args, **kwargs):
+    def _on_update(self, rotations: int, timestamp: int, **kwargs):
         """
         :param rotations: number of rotations
         :param timestamp: time of last pass in microseconds

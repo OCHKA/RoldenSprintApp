@@ -27,7 +27,7 @@ class RacerWidget(BoxLayout, Component):
     def reset_position(self):
         self._start_distance = None
 
-    def on_speed_data(self, speed: int, *args, **kwargs):
+    def on_speed_data(self, speed: int, **kwargs):
         """
         :param speed: in meters per second
         """
@@ -38,7 +38,7 @@ class RacerWidget(BoxLayout, Component):
     def on_speed(self, instance, value):
         self._speed_text = f"{value:06.2f} KPH"
 
-    def on_distance_data(self, distance: int, *args, **kwargs):
+    def on_distance_data(self, distance: int, **kwargs):
         """
         :param distance: since start in meters
         """

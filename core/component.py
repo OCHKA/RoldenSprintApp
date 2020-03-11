@@ -1,4 +1,4 @@
-from .io_service import IoService
+from .io.service import IoService
 
 
 class Component:

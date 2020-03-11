@@ -22,7 +22,7 @@ class DistanceConverter(Component):
 
         self._io.subscribe(self._rotations_topic, self._on_update)
 
-    def _on_update(self, rotations: int, *args, **kwargs):
+    def _on_update(self, rotations: int, **kwargs):
         """
         :param rotations: number of rotations
         """
