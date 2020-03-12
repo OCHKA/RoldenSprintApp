@@ -1,3 +1,4 @@
+sismic
 paho-mqtt
 pyexpander
 Kivy==2.0.0rc1

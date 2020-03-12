@@ -1,0 +1,16 @@
+statechart:
+  name: Racer Controller
+  root state:
+    name: root
+    initial: idle
+    states:
+      - name: idle
+        transitions:
+          - event: start
+            target: race
+            action: racer.reset()
+      - name: race
+        transitions:
+          - guard: racer.position >= racer.race_distance
+            action: racer.record_score()
+            target: idle

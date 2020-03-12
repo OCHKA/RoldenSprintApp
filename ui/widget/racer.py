@@ -22,15 +22,15 @@ class RacerWidget(BoxLayout, Component):
         super().__init__(**kwargs)
 
         self._speed_anim = None
-        self._start_distance = None
 
     def reset_position(self):
-        self._start_distance = None
+        pass
 
     def on_speed_data(self, speed: int, **kwargs):
         """
         :param speed: in meters per second
         """
+
         speed_kph = speed * 3.6
         anim = Animation(speed=speed_kph, duration=1 / 5)
         anim.start(self)
@@ -42,17 +42,12 @@ class RacerWidget(BoxLayout, Component):
         """
         :param distance: since start in meters
         """
-        if self._start_distance is None:
-            self._start_distance = distance
 
-        anim = Animation(distance=distance - self._start_distance, duration=1 / 5)
+        anim = Animation(distance=distance, duration=1 / 5)
         anim.start(self)
 
     def on_distance(self, instance, value):
-        if value >= self.race_distance:
-            self._progress_text = "FINISHED"
-        else:
-            self._progress_text = f"{self.distance:.2f} / {self.race_distance} M"
+        self._progress_text = f"{value:.2f} / {self.race_distance} M"
 
     def on_speed_topic(self, instance, value):
         self._io.subscribe(value, self.on_speed_data)
