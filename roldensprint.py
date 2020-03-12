@@ -21,8 +21,8 @@ for index, racer in enumerate(conf['racers']):
 
     ui_racers.append({'name': racer['name'], 'speed': speed, 'distance': distance})
 
-    registry.register_component('converter.speed', input=samples, output=speed, length=racer['roller_length'])
-    registry.register_component('converter.distance', input=samples, output=distance, length=racer['roller_length'])
+    registry.add_component('converter.speed', input=samples, output=speed, length=racer['roller_length'])
+    registry.add_component('converter.distance', input=samples, output=distance, length=racer['roller_length'])
 
 
-registry.register_component('ui', race_distance=conf['sprint']['distance'], racers=ui_racers)
+registry.add_component('ui', race_distance=conf['sprint']['distance'], racers=ui_racers)

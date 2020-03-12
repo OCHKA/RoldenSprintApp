@@ -5,7 +5,7 @@ import logging
 __registered_components: typing.Dict[str, typing.List[typing.Dict]] = {}
 
 
-def register_component(package_name: str, **kwargs) -> None:
+def add_component(package_name: str, **kwargs) -> None:
     logging.info(f"core.registry: {package_name}")
 
     module = importlib.import_module(package_name)
