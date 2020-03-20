@@ -11,6 +11,6 @@ statechart:
             action: racer.reset()
       - name: race
         transitions:
-          - guard: racer.position >= racer.race_distance
+          - guard: racer.distance >= race_distance
             action: racer.record_score()
             target: idle

@@ -10,33 +10,32 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 
 class RacerComponent(Component):
-    def __init__(self, race_distance: int, distance: str, position: str, events: str):
+    def __init__(self, race_distance: int, sensor_distance: str, racer_distance: str, events: str):
         super().__init__()
 
-        self._position_topic = position
-        self._racer = Racer(race_distance)
+        self._racer_distance_topic = racer_distance
+        self._racer = Racer()
 
         with open(SCRIPT_DIR / 'racer.yaml') as f:
             statechart = sismic.io.import_from_yaml(f)
-        self._interpreter = Interpreter(statechart, initial_context={'racer': self._racer})
+
+        context = {
+            'race_distance': race_distance,
+            'racer': self._racer
+        }
+        self._interpreter = Interpreter(statechart, initial_context=context)
         self._interpreter.execute()
 
-        self._io.subscribe(distance, self._on_distance)
+        self._io.subscribe(sensor_distance, self._on_sensor_distance)
         self._io.subscribe(events, self._on_event)
 
-    def _on_distance(self, distance: int):
+    def _on_sensor_distance(self, distance: int):
         """
         :param distance: meters since sensor start
         """
 
-        racer = self._racer
-
-        racer.sensor_position = distance
-        if racer.start_position is None:
-            racer.start_position = distance
-        racer.position = distance - racer.start_position
-
-        self._io.publish(self._position_topic, distance=racer.position)
+        self._racer.sensor_distance = distance
+        self._io.publish(self._racer_distance_topic, distance=self._racer.distance)
 
         steps = self._interpreter.execute()
         if steps:

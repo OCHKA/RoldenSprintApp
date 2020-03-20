@@ -1,3 +1,4 @@
+munch
 sismic
 paho-mqtt
 pyexpander
