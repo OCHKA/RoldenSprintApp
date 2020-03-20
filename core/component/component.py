@@ -1,4 +1,4 @@
-from .io.service import IoService
+from core.io.service import IoService
 
 
 class Component:
